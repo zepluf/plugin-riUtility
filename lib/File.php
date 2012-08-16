@@ -56,7 +56,7 @@ class File{
 
     public function mkDir($absolute_path, $chmod = '0777'){
         $success = false;
-        if(!is_dir($final_path)){
+        if(!is_dir($absolute_path)){
             $old_umask = umask(0);
             $success = @mkdir($absolute_path, $chmod, true);
             umask($old_umask);
