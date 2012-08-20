@@ -4,6 +4,8 @@ namespace plugins\riUtility;
 use plugins\riPlugin\Plugin;
 
 class File{
+    protected $path = array();
+
     public function getRelativePath($from, $to)
 	{
 		$from = explode('/', $from);
@@ -54,7 +56,7 @@ class File{
         return $cache_folder;
     }
 
-    public function mkDir($absolute_path, $chmod = '0777'){
+    public function mkDir($absolute_path, $chmod = 0777){
         $success = false;
         if(!is_dir($absolute_path)){
             $old_umask = umask(0);
@@ -134,4 +136,34 @@ class File{
 			if($chmod != 0)	@chmod($file, $chmod);			
 		}
 	}
+
+    public function getAdminToCatalogRelativePath($request_type){
+        if(!isset($this->path['a2c'][$request_type])){
+            if($request_type == "SSL"){
+                $admin_path = DIR_WS_HTTPS_ADMIN;
+                $catalog_path = DIR_WS_HTTPS_CATALOG;
+            }
+            else{
+                $admin_path = DIR_WS_ADMIN;
+                $catalog_path = DIR_WS_CATALOG;
+            }
+            $this->path['a2c'][$request_type] = Plugin::get('riUtility.File')->getRelativePath($admin_path, $catalog_path);
+        }
+        return $this->path['a2c'][$request_type];
+    }
+
+    public function getCatalogToAdminRelativePath($request_type){
+        if(!isset($this->path['c2a'][$request_type])){
+            if($request_type == "SSL"){
+                $admin_path = DIR_WS_HTTPS_ADMIN;
+                $catalog_path = DIR_WS_HTTPS_CATALOG;
+            }
+            else{
+                $admin_path = DIR_WS_ADMIN;
+                $catalog_path = DIR_WS_CATALOG;
+            }
+            $this->path['c2a'][$request_type] = Plugin::get('riUtility.File')->getRelativePath($catalog_path, $admin_path);
+        }
+        return $this->path['c2a'][$request_type];
+    }
 }
